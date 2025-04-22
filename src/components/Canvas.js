@@ -1,14 +1,15 @@
 import React from 'react';
 import Element from './Element';
 
-const Canvas = ({ elements, setSelectedElement }) => {
+const Canvas = ({ elements, setSelected, selected }) => {
   return (
-    <div className="canvas">
+    <div className="flex-1 relative bg-white">
       {elements.map((el) => (
         <Element
           key={el.id}
-          element={el}
-          setSelectedElement={setSelectedElement}
+          el={el}
+          isSelected={selected?.id === el.id}
+          onClick={() => setSelected(el)}
         />
       ))}
     </div>
