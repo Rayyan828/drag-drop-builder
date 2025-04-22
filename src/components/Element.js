@@ -1,31 +1,33 @@
 import React from 'react';
 
-const Element = ({ element, setSelectedElement }) => {
-  const style = {
-    position: 'absolute',
-    ...element.style,
-    cursor: 'pointer',
-  };
+const Element = ({ el, onClick, isSelected }) => {
+  const baseStyle = `absolute p-2 border rounded cursor-pointer ${
+    isSelected ? 'border-blue-500' : 'border-gray-300'
+  }`;
 
   return (
     <div
-      style={style}
-      onClick={() => setSelectedElement(element)}
+      className={baseStyle}
+      style={{ top: el.y, left: el.x }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
       draggable
       onDragEnd={(e) => {
-        element.style.top = e.clientY - 50;
-        element.style.left = e.clientX - 200;
+        el.x = e.clientX - 200;
+        el.y = e.clientY - 50;
       }}
     >
-      {element.type === 'text' && <p>{element.content}</p>}
-      {element.type === 'image' && (
+      {el.type === 'Text' && <p>{el.content}</p>}
+      {el.type === 'Button' && <button>{el.content}</button>}
+      {el.type === 'Image' && (
         <img
-          src={element.content || 'https://via.placeholder.com/100'}
-          alt="placeholder"
-          style={{ width: 100 }}
+          src={el.content || 'https://via.placeholder.com/100'}
+          alt="img"
+          className="w-24 h-auto"
         />
       )}
-      {element.type === 'button' && <button>{element.content || 'Click'}</button>}
     </div>
   );
 };
