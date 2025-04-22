@@ -2,28 +2,24 @@ import React, { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import Canvas from './components/Canvas';
 import PropertiesPanel from './components/PropertiesPanel';
-import './styles.css';
 
-function App() {
+export default function App() {
   const [elements, setElements] = useState([]);
-  const [selectedElement, setSelectedElement] = useState(null);
+  const [selected, setSelected] = useState(null);
 
   return (
-    <div className="app-container">
+    <div className="flex h-screen">
       <Sidebar setElements={setElements} elements={elements} />
       <Canvas
         elements={elements}
-        setSelectedElement={setSelectedElement}
+        setSelected={setSelected}
+        selected={selected}
       />
-      {selectedElement && (
-        <PropertiesPanel
-          element={selectedElement}
-          setElements={setElements}
-          elements={elements}
-        />
-      )}
+      <PropertiesPanel
+        selected={selected}
+        elements={elements}
+        setElements={setElements}
+      />
     </div>
   );
 }
-
-export default App;
