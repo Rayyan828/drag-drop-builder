@@ -1,28 +1,33 @@
 import React from 'react';
 
-const PropertiesPanel = ({ element, setElements, elements }) => {
-  const updateContent = (e) => {
+const PropertiesPanel = ({ selected, elements, setElements }) => {
+  if (!selected) return <div className="w-1/4 bg-gray-100 p-4 border-l" />;
+
+  const updateContent = (value) => {
     const updated = elements.map((el) =>
-      el.id === element.id ? { ...el, content: e.target.value } : el
+      el.id === selected.id ? { ...el, content: value } : el
     );
     setElements(updated);
   };
 
   return (
-    <div className="properties-panel">
-      <h3>Edit Properties</h3>
-      {element.type !== 'image' ? (
+    <div className="w-1/4 bg-gray-100 p-4 border-l">
+      <h2 className="text-xl font-bold mb-4">Properties</h2>
+      {selected.type === 'Image' ? (
         <input
           type="text"
-          value={element.content}
-          onChange={updateContent}
+          value={selected.content}
+          onChange={(e) => updateContent(e.target.value)}
+          className="w-full border p-2"
+          placeholder="Image URL"
         />
       ) : (
         <input
           type="text"
-          placeholder="Image URL"
-          value={element.content}
-          onChange={updateContent}
+          value={selected.content}
+          onChange={(e) => updateContent(e.target.value)}
+          className="w-full border p-2"
+          placeholder="Text"
         />
       )}
     </div>
