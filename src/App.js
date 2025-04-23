@@ -1,26 +1,32 @@
-import React from 'react';
-import { Toolbar } from './components/Toolbar';
-import { Palette } from './components/Palette';
-import { Canvas } from './components/Canvas';
-import { PropertyEditor } from './components/PropertyEditor';
-import './index.css';
+import React, { useState } from 'react';
+import { DndContext } from '@dnd-kit/core';
+import Sidebar from './components/Sidebar';
+import Canvas from './components/Canvas';
+import ElementForm from './components/ElementForm';
 
-function App() {
+export default function App() {
+  const [elements, setElements] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+
+  const handleDrop = (event) => {
+    const id = Date.now().toString();
+    setElements([...elements, { id, type: event.active.id, props: {} }]);
+  };
+
+  const updateElement = (id, newProps) => {
+    setElements(elements.map(el => el.id === id ? { ...el, props: newProps } : el));
+  };
+
   return (
-    <div className="app">
-      {/* Toolbar with reset button */}
-      <Toolbar />
-      
-      {/* Palette where draggable items are listed */}
-      <Palette />
-      
-      {/* Canvas where dropzones are displayed for items to be dragged */}
-      <Canvas />
-      
-      {/* Optional Property Editor */}
-      <PropertyEditor />
-    </div>
+    <DndContext onDragEnd={handleDrop}>
+      <div className="flex h-screen">
+        <Sidebar />
+        <Canvas elements={elements} setSelectedId={setSelectedId} selectedId={selectedId} />
+        <ElementForm 
+          selected={elements.find(e => e.id === selectedId)}
+          updateElement={updateElement}
+        />
+      </div>
+    </DndContext>
   );
 }
-
-export default App;
