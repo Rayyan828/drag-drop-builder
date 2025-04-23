@@ -1,11 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Drag & Drop Builder</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simple Drag & Drop Builder</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar, .properties {
+      width: 20%;
+      padding: 16px;
+      background-color: #f0f0f0;
+      box-sizing: border-box;
+    }
+
+    .canvas {
+      flex-grow: 1;
+      background: #fff;
+      padding: 16px;
+      overflow-y: auto;
+      border-left: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+    }
+
+    .element {
+      border: 1px dashed #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .selected {
+      border-color: blue;
+      background-color: #e0f0ff;
+    }
+
+    .draggable {
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #ddd;
+      cursor: move;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 8px 16px;
+      margin-top: 8px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h3>Elements</h3>
+    <div class="draggable" draggable="true" data-type="text">Text</div>
+    <div class="draggable" draggable="true" data-type="image">Image</div>
+    <div class="draggable" draggable="true" data-type="button">Button</div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas" id="canvas" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+    <p style="color: #aaa;">Drop elements here</p>
+  </div>
+
+  <!-- Properties Editor -->
+  <div class="properties" id="properties">
+    <h3>Element Properties</h3>
+    <div id="formContainer">Select an element</div>
+  </div>
+
+  <script>
+    let selectedElement = null;
+
+    document.querySelectorAll('.draggable').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('type', e.target.getAttribute('data-type'));
+      });
+    });
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const type = e.dataTransfer.getData('type');
+      const element = document.createElement('div');
+      element.className = 'element';
+      element.setAttribute('data-type', type);
+      element.setAttribute('tabindex', 0);
+      element.addEventListener('click', () => selectElement(element));
+
+      if (type === 'text') {
+        element.textContent = 'Editable Text';
+      } else if (type === 'image') {
+        const img = document.createElement('img');
+        img.src = 'https://via.placeholder.com/150';
+        img.style.maxWidth = '100%';
+        element.appendChild(img);
+      } else if (type === 'button') {
+        const btn = document.createElement('button');
+        btn.textContent = 'Click Me';
+        element.appendChild(btn);
+      }
+
+      document.getElementById('canvas').appendChild(element);
+    }
+
+    function selectElement(el) {
+      if (selectedElement) {
+        selectedElement.classList.remove('selected');
+      }
+      selectedElement = el;
+      el.classList.add('selected');
+      showForm(el);
+    }
+
+    function showForm(el) {
+      const container = document.getElementById('formContainer');
+      container.innerHTML = '';
+      const type = el.getAttribute('data-type');
+
+      if (type === 'text') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = el.textContent;
+        input.oninput = () => { el.textContent = input.value; };
+        container.appendChild(input);
+      } else if (type === 'image') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = el.querySelector('img').src;
+        input.oninput = () => { el.querySelector('img').src = input.value; };
+        container.appendChild(input);
+      } else if (type === 'button') {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = el.querySelector('button').textContent;
+        input.oninput = () => { el.querySelector('button').textContent = input.value; };
+        container.appendChild(input);
+      }
+    }
+  </script>
+</body>
 </html>
